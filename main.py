@@ -113,28 +113,23 @@ def decodificar(r):
     # paso ii -- Si w(s) ≤ 3, entonces el vector error es e = (s,0)
     elif peso_palabra(s) <= 3:
         e = np.concatenate((s, ceros), axis=None)  # Concatena s (sindrome de r) con un narray de 0s
-        print("Holas9")
     else:
         num_fila = -1
         fila = None
         for i in range(len(A[0])):  # A[0] -> numero de filas
             # paso iii -- Si w(s + ai) ≤ 2 para alguna fila ai de la matriz A, entonces el vector error es e = (s + ai,ui).
             if peso_palabra(trunca_binario(s + A[i])) <= 2:
-                print("Holas2")
                 num_fila = i
                 fila = A[i]
                 break
         if num_fila == -1:
             # paso iV -- Se calcula el segundo síndrome de la palabra r, s*A.
             s = np.sindrome(trunca_binario(np.dot(s, A)))
-            print("Holas3")
             # paso v -- Si w(s A) ≤ 3, entonces el vector error es e = (0,s*A).
             if peso_palabra(s) <= 3:
                 e = np.concatenate((ceros, s), axis=None)
-                print("Holas7")
             # paso vi -- Si w(s A + ai) ≤ 2 para alguna fila ai de la matriz A, entonces el vector error es e = (ui,s A + ai).
             else:
-                print("Holas4")
                 num_fila = -1
                 fila = None
                 for i in range(len(A[0])):  # A[0] -> numero de filas
@@ -146,13 +141,10 @@ def decodificar(r):
                 if e is None:
                     print("Se ha recibido mas de cuatro errores")
                 else:
-                    print("Holas5")
                     e = np.concatenate((trunca_binario(fila + s), I[num_fila]), axis=None)
         else:
-            print("Holas6")
             e = np.concatenate((trunca_binario(fila + s), I[num_fila]), axis=None)
 
     if e is not None:
-        print("Holas8")
         palabra_origen = palabra_original(e,r)
     return palabra_origen
