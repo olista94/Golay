@@ -100,7 +100,7 @@ def eliminar_bit_final(palabra):
 def palabra_original(palabra_error,palabra_recibida):
     return trunca_binario(palabra_error+palabra_recibida)
 
-def decodificar(r):
+def descodificar(r):
 
     e = None
     palabra_origen = None
@@ -147,4 +147,26 @@ def decodificar(r):
 
     if e is not None:
         palabra_origen = palabra_original(e,r)
+        #palabra_fuente = simbolo_fuente(palabra_origen)
     return palabra_origen
+
+palabra = np.array([1,1,1,1,1,1,0,0,0,0,0,0])
+
+print("Palabra origen:", palabra)
+print("Palabra codificada de 23 bits:", codificar_palabra_23(palabra))
+print("")
+print("Vamos a añadir 3 errores a la anterior palabra en el primer, tercer y ultimo bit")
+palabra_codificada = np.array([0,1,0,1,1,1,0,0,0,0,0,0,1,1,1,0,0,1,1,0,1,0,1]) # Error en el primer y tercer bit
+
+print("Palabra codificada con 3 errores:", palabra_codificada)
+print("\nAñadimos un bit a la palabra de 23 bits")
+palabra_codificada_24 = añadir_bit(palabra_codificada)
+print("Palabra codificada de 24 bits:", palabra_codificada_24)
+
+palabra_descodificada = descodificar(palabra_codificada_24)
+print("Palabra descodificada de 24 bits: ", palabra_descodificada)
+palabra_descodificada_23 = eliminar_bit_final(palabra_descodificada)
+print("Palabra decodificada de 23 bits: ", palabra_descodificada_23)
+
+palabra_fuente = simbolo_fuente(palabra_descodificada)
+print("Palabra fuente", palabra_fuente)
