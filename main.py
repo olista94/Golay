@@ -108,55 +108,54 @@ def descodificar(r):
     # paso i -- Se calcula el síndrome de la palabra recibida, s = r G_24tr.
     s = sindrome(r)  # <- Calculo el sindrome de r
     if peso_palabra(s) == 0:
+        print(r)
         return r
 
     # paso ii -- Si w(s) ≤ 3, entonces el vector error es e = (s,0)
     elif peso_palabra(s) <= 3:
-        e = np.concatenate((s, ceros), axis=None)  # Concatena s (sindrome de r) con un narray de 0s
+        e = np.concatenate((s,ceros),axis=None)  # Concatena s (sindrome de r) con un narray de 0s
     else:
         num_fila = -1
         fila = None
         for i in range(len(A[0])):  # A[0] -> numero de filas
             # paso iii -- Si w(s + ai) ≤ 2 para alguna fila ai de la matriz A, entonces el vector error es e = (s + ai,ui).
-            if peso_palabra(trunca_binario(s + A[i])) <= 2:
-                num_fila = i
-                fila = A[i]
+            if peso_palabra(trunca_binario(s+A[i])) <= 2:
+                num_fila = i # En indice_u guarda la posision de la fila
+                fila = A[i] # en vector_a guarda la fila
                 break
         if num_fila == -1:
             # paso iV -- Se calcula el segundo síndrome de la palabra r, s*A.
-            s = np.sindrome(trunca_binario(np.dot(s, A)))
+            s = trunca_binario(np.dot(s,A))
             # paso v -- Si w(s A) ≤ 3, entonces el vector error es e = (0,s*A).
             if peso_palabra(s) <= 3:
-                e = np.concatenate((ceros, s), axis=None)
+                e = np.concatenate((ceros,s),axis=None)
             # paso vi -- Si w(s A + ai) ≤ 2 para alguna fila ai de la matriz A, entonces el vector error es e = (ui,s A + ai).
             else:
                 num_fila = -1
                 fila = None
                 for i in range(len(A[0])):  # A[0] -> numero de filas
-                    if peso_palabra(trunca_binario(s + A[i])) <= 2:
+                    if peso_palabra(trunca_binario(s+A[i])) <= 2:
                         num_fila = i
                         fila = A[i]
                         break
                 # paso vii -- Si todavía no se ha determinado el vector error e, solicitar una retransmisión pues se han producido más de tres errores.
                 if e is None:
-                    print("Se ha recibido mas de cuatro errores")
+                    print("Se ha recibido mas de tres errores")
                 else:
-                    e = np.concatenate((trunca_binario(fila + s), I[num_fila]), axis=None)
+                    e = np.concatenate((trunca_binario(fila+s),I[num_fila]),axis=None)
         else:
-            e = np.concatenate((trunca_binario(fila + s), I[num_fila]), axis=None)
+            e = np.concatenate((trunca_binario(fila+s),I[num_fila]),axis=None)
 
     if e is not None:
         palabra_origen = palabra_original(e,r)
-        #palabra_fuente = simbolo_fuente(palabra_origen)
     return palabra_origen
 
-palabra = np.array([1,1,1,1,1,1,0,0,0,0,0,0])
+palabra3 = np.array([1,1,1,1,1,1,0,0,0,0,0,0])
 
-print("Palabra origen:", palabra)
-print("Palabra codificada de 23 bits:", codificar_palabra_23(palabra))
-print("")
-print("Vamos a añadir 3 errores a la anterior palabra en el primer, tercer y ultimo bit")
-palabra_codificada = np.array([0,1,0,1,1,1,0,0,0,0,0,0,1,1,1,0,0,1,1,0,1,0,1]) # Error en el primer y tercer bit
+print("Palabra origen:", palabra3)
+print("Palabra codificada de 23 bits:", codificar_palabra_23(palabra3))
+print("\nVamos a añadir 3 errores a la anterior palabra en el primer, tercer y ultimo bit")
+palabra_codificada = np.array([0,1,0,1,1,1,0,0,0,0,0,0,1,1,1,0,0,1,1,0,1,0,1]) # Error en el primer,tercer y ultimo bit
 
 print("Palabra codificada con 3 errores:", palabra_codificada)
 print("\nAñadimos un bit a la palabra de 23 bits")
@@ -170,3 +169,16 @@ print("Palabra decodificada de 23 bits: ", palabra_descodificada_23)
 
 palabra_fuente = simbolo_fuente(palabra_descodificada)
 print("Palabra fuente", palabra_fuente)
+
+####################################################################################################################
+print("Palabra origen:", palabra3)
+print("Palabra codificada de 23 bits:", codificar_palabra_23(palabra3))
+print("\nVamos a añadir 4 errores a la anterior palabra en el primer, tercer y ultimo bit")
+palabra_codificada = np.array([0,0,0,1,1,1,0,0,0,0,0,0,1,1,1,0,0,1,1,0,1,0,1]) # Error en el primer,tercer y ultimo bit
+
+print("Palabra codificada con 4 errores:", palabra_codificada)
+print("\nAñadimos un bit a la palabra de 23 bits")
+palabra_codificada_24 = añadir_bit(palabra_codificada)
+print("Palabra codificada de 24 bits:", palabra_codificada_24)
+
+palabra_descodificada = descodificar(palabra_codificada_24)
